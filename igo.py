@@ -1,0 +1,1 @@
+from easyimput import read
