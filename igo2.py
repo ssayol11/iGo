@@ -4,6 +4,7 @@ import pickle
 import urllib
 import csv
 import networkx
+from staticmap import StaticMap, Line
 
 PLACE = 'Barcelona, Catalonia'
 GRAPH_FILENAME = 'barcelona.graph'
