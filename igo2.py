@@ -34,11 +34,11 @@ def to_pairs(coordinates):
     return list([(float(coords[0]), float(coords[1])), (float(coords[2]), float(coords[3]))])
 
 def download_highways_congestions(HIGHWAYS_URL, CONGESTIONS_URL):
+    highways_congestions = {}
     with urllib.request.urlopen(HIGHWAYS_URL) as response:
         lines = [l.decode('utf-8') for l in response.readlines()]
         reader = csv.reader(lines, delimiter=',')
         next(reader)  # ignore first line with description
-        highways_congestions = {}
         for line in reader:
             highway_id, description, coordinates = line
             highways_congestions.update({highway_id: [description, to_pairs(coordinates)]})
