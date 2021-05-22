@@ -28,6 +28,29 @@ def load_graph (GRAPH_FILENAME):
         graph = pickle.load(file)
     return graph
 
+def to_pairs(coordinates):
+    coords = coordinates.split(',', 4)
+    return list([(float(coords[0]), float(coords[1])), (float(coords[2]), float(coords[3]))])
+
+def download_highways(HIGHWAYS_URL):
+    with urllib.request.urlopen(HIGHWAYS_URL) as response:
+        lines = [l.decode('utf-8') for l in response.readlines()]
+        reader = csv.reader(lines, delimiter=',', quotechar='"')
+        next(reader)  # ignore first line with description
+        highways = {}
+        for line in reader:
+            way_id, description, coordinates = line
+            highways.update({way_id: [description, to_pairs(coordinates)]})
+        return highways
+
+def plot_highways(highways, file, SIZE):
+    bcn_map = StaticMap(SIZE, SIZE) 
+    for key in highways:
+        line = Line(highways.get(key)[1], 'blue', 2)
+        bcn_map.add_line(line)
+    image = bcn_map.render()
+    image.save(file)
+
 def main():
     # load/download graph (using cache)
     try:
