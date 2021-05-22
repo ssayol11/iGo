@@ -33,21 +33,39 @@ def to_pairs(coordinates):
     coords = coordinates.split(',', 4)
     return list([(float(coords[0]), float(coords[1])), (float(coords[2]), float(coords[3]))])
 
-def download_highways(HIGHWAYS_URL):
+def download_highways_congestions(HIGHWAYS_URL, CONGESTIONS_URL):
     with urllib.request.urlopen(HIGHWAYS_URL) as response:
         lines = [l.decode('utf-8') for l in response.readlines()]
-        reader = csv.reader(lines, delimiter=',', quotechar='"')
+        reader = csv.reader(lines, delimiter=',')
         next(reader)  # ignore first line with description
-        highways = {}
+        highways_congestions = {}
         for line in reader:
-            way_id, description, coordinates = line
-            highways.update({way_id: [description, to_pairs(coordinates)]})
-        return highways
+            highway_id, description, coordinates = line
+            highways_congestions.update({highway_id: [description, to_pairs(coordinates)]})
+    with urllib.request.urlopen(CONGESTIONS_URL) as response:
+        lines = [l.decode('utf-8') for l in response.readlines()]
+        reader = csv.reader(lines, delimiter='#')
+        for line in reader:
+            congestion_id, date, actual_congestion, future_congestion = line
+            highways_congestions.get(congestion_id).append(actual_congestion)
+        return highways_congestions
 
-def plot_highways(highways, file, SIZE):
-    bcn_map = StaticMap(SIZE, SIZE) 
-    for key in highways:
-        line = Line(highways.get(key)[1], 'blue', 2)
+def plot_highways(highways_congestions, file, SIZE):
+    bcn_map = StaticMap(SIZE, SIZE)
+    for key in highways_congestions:
+        line = Line(highways_congestions.get(key)[1], 'rgb(153,51,255)', 2)
+        bcn_map.add_line(line)
+    image = bcn_map.render()
+    image.save(file)
+    
+def choose_colour(n):   
+    colours = ['rgb(128,128,128)', 'blue', 'green', 'rgb(255,255,0)', 'rgb(255,128,0)', 'red', 'rgb(0,0,0)']
+    return colours[n]
+
+def plot_congestions(highways_congestions, file, SIZE):
+    bcn_map = StaticMap(SIZE, SIZE)
+    for key in highways_congestions:
+        line = Line(highways_congestions.get(key)[1], choose_colour(int(highways_congestions.get(key)[2])), 4)
         bcn_map.add_line(line)
     image = bcn_map.render()
     image.save(file)
@@ -60,9 +78,10 @@ def main():
         graph = download_graph(PLACE)
         save_graph (graph, GRAPH_FILENAME)
 
-    osmnx.plot_graph(graph)
+    #osmnx.plot_graph(graph)
 
-    highways = download_highways(HIGHWAYS_URL)
-    plot_highways(highways, 'highways.png', SIZE)
+    highways_and_congestions = download_highways_congestions(HIGHWAYS_URL, CONGESTIONS_URL)
+    plot_highways(highways_and_congestions, 'highways.png', SIZE)
+    plot_congestions(highways_and_congestions, 'congestions.png', SIZE)
 
 main()
