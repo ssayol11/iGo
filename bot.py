@@ -7,14 +7,22 @@ SIZE = 800
 
 # defineix una funció que saluda i que s'executarà quan el bot rebi el missatge /start
 def start(update, context):
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Bot iniciat")
+    
+def highways(update, context):
+    highways = igo.download_highways_congestions(HIGHWAYS_URL, CONGESTIONS_URL)
+    igo.plot_highways(highways, 'highways.png', SIZE)
+    context.bot.send_photo(chat_id=update.effective_chat.id, photo=open('highways.png', 'rb'))
+    
+def congestions(update, context):
     congestions = igo.download_highways_congestions(HIGHWAYS_URL, CONGESTIONS_URL)
     igo.plot_congestions(congestions, 'congestions.png', SIZE)
     context.bot.send_photo(chat_id=update.effective_chat.id, photo=open('congestions.png', 'rb'))
 
 def help(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="/author (owners of the project)")
-    context.bot.send_message(chat_id=update.effective_chat.id, text="/go destination (shows the way to the destination)")
-    context.bot.send_message(chat_id=update.effective_chat.id, text="/where (shows the actual position of the user)")
+    context.bot.send_message(chat_id=update.effective_chat.id, text="/highways")
+    context.bot.send_message(chat_id=update.effective_chat.id, text="/congestions")
 
 # declara una constant amb el access token que llegeix de token.txt
 TOKEN = open('token.txt').read().strip()
@@ -26,6 +34,8 @@ dispatcher = updater.dispatcher
 # indica que quan el bot rebi la comanda /start s'executi la funció start
 dispatcher.add_handler(CommandHandler('start', start))
 dispatcher.add_handler(CommandHandler('help', help))
+dispatcher.add_handler(CommandHandler('highways', highways))
+dispatcher.add_handler(CommandHandler('congestions', congestions))
 
 # engega el bot
 updater.start_polling()
