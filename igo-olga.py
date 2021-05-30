@@ -37,7 +37,7 @@ def load_graph(GRAPH_FILENAME):
     return graph
 
 def download_digraph(graph):
-    digraph = osmnx.utils_graph.get_digraph(graph, weight='length')
+    digraph = osmnx.get_digraph(graph, weight='length')
     return digraph
 
 def to_pairs(coordinates):
@@ -80,7 +80,6 @@ def download_highways(HIGHWAYS_URL):
             new_highway = Highway(highway_id = int(highway_id), description = description, coordinates = to_pairs(coordinates))
             highways.append(new_highway)
         highways.sort(key=comparator)
-        print(len(highways), highways[len(highways) - 1].highway_id)
         return highways
 
 def download_congestions(CONGESTIONS_URL):
@@ -93,7 +92,6 @@ def download_congestions(CONGESTIONS_URL):
             congestion = Congestion(highway_id = int(congestion_id), congestion = int(actual_congestion))
             congestions.append(congestion)
         congestions.sort(key=comparator)
-        print(len(congestions), congestions[len(congestions) - 1].highway_id)
         return congestions
 
 def plot_highways(highways, file, SIZE):
@@ -129,9 +127,10 @@ def itime(length, congestion, maxspeed):
 def nearest_node(graph, coord):
     nearest_node = None
     nearest_dist = 99999
+    coords = (coord[1], coord[0])
     
     for node, info in graph.nodes.items():
-        d = haversine((info['x'], info['y']), coord)
+        d = haversine((info['x'], info['y']), coords)
         if d < nearest_dist:
             nearest_dist = d
             nearest_node = node
@@ -159,9 +158,8 @@ def build_igraph(graph, highways, congestions):
         finish_coord = highways[i].coordinates[len(highways[i].coordinates) - 1]
         start_node = nearest_node(graph, start_coord)
         finish_node = nearest_node(graph, finish_coord)
-        print(start_node, finish_node)
         try:
-            list_nodes = osmnx.distance.shortest_path(graph, start_node, finish_node, weight='length')
+            list_nodes = osmnx.shortest_path(graph, start_node, finish_node, weight='length')
             congestion = congestions[i].congestion
             for j in range(len(list_nodes) - 1):
                 length = get_length(graph, list_nodes[j], list_nodes[j + 1])
@@ -170,6 +168,23 @@ def build_igraph(graph, highways, congestions):
         except:
             pass
     return graph
+
+def get_shortest_path_with_ispeeds(igraph, origin, destination):
+    start = nearest_node(igraph, origin)
+    finish = nearest_node(igraph, destination)
+    print(start, finish)
+    return osmnx.shortest_path(igraph, start, finish, weight='itime')
+
+def plot_path(igraph, ipath, SIZE, file):
+    bcn_map = StaticMap(SIZE, SIZE)
+    coords = []
+    for i in range(len(ipath) - 1):
+        coord = (igraph.nodes[ipath[i]]['x'], igraph.nodes[ipath[i]]['y'])
+        coords.append(coord)
+    line = Line(coords, 'rgb(153,51,255)', 2)
+    bcn_map.add_line(line)
+    image = bcn_map.render()
+    image.save(file)
 
 def main():
     # load/download graph (using cache)
@@ -192,6 +207,15 @@ def main():
     
     #digraph = download_digraph(graph)
     
-    igraph = build_igraph(graph, highways, congestions)
+    #igraph = build_igraph(graph, highways, congestions)
+    #save_graph(igraph, 'barcelona.igraph.olga')
+    
+    igraph = load_graph('barcelona.igraph.olga')
+    
+    print(osmnx.geocode('Campus Nord, ' + PLACE))
+    print(osmnx.geocode('Sagrada Família, ' + PLACE))
+    ipath = get_shortest_path_with_ispeeds(igraph, osmnx.geocode('Campus Nord, Barcelona'), osmnx.geocode('Sagrada Família, Barcelona'))
+    
+    plot_path(igraph, ipath, SIZE, 'ipath.png')
     
 main()
