@@ -5,6 +5,7 @@ import urllib
 import csv
 import networkx
 from staticmap import StaticMap, Line
+from haversine import haversine
 
 PLACE = 'Barcelona, Catalonia'
 GRAPH_FILENAME = 'barcelona.graph'
@@ -13,7 +14,8 @@ HIGHWAYS_URL = 'https://opendata-ajuntament.barcelona.cat/data/dataset/1090983a-
 CONGESTIONS_URL = 'https://opendata-ajuntament.barcelona.cat/data/dataset/8319c2b1-4c21-4962-9acd-6db4c5ff1148/resource/2d456eb5-4ea6-4f68-9794-2f3f1a58a933/download'
 
 def download_graph (PLACE):
-    graph = osmnx.graph_from_place(PLACE, network_type='drive', simplify=True)
+    graph = osmnx.graph_from_place(PLACE, network_type='drive', simplify=False)
+    graph = osmnx.add_edge_speeds(graph)
     #graph = osmnx.utils_graph.get_digraph(graph, weight='length')
     return graph
 
@@ -50,7 +52,7 @@ def download_highways_congestions(HIGHWAYS_URL, CONGESTIONS_URL):
         for line in reader:
             congestion_id, date, actual_congestion, future_congestion = line
             highways_congestions.get(congestion_id).append(actual_congestion)
-        return highways_congestions
+    return highways_congestions
 
 def plot_highways(highways_congestions, file, SIZE):
     bcn_map = StaticMap(SIZE, SIZE)
@@ -76,25 +78,28 @@ def itime(length, congestion, maxspeed):
     return(length * 5 / (maxspeed * (6 - congestion)))
 
 def build_igraph(graph, highways_congestions):
-    graph = osmnx.add_edge_speeds(graph)
     for key in highways_congestions:
-        if highways_congestions.get(key)[2] != 0:
+        if highways_congestions.get(key)[2] != 0 and highways_congestions.get(key)[2] != 6:
             for i in range(len(highways_congestions.get(key)[1]) - 1):
                 start_coord = highways_congestions.get(key)[1][i]
                 finish_coord = highways_congestions.get(key)[1][i + 1]
-                start_node = osmnx.distance.nearest_nodes(graph, start_coord[0], start_coord[1])
-                finish_node = osmnx.distance.nearest_nodes(graph, finish_coord[0], finish_coord[1])
-                list_nodes = osmnx.distance.shortest_path(graph, start_node, finish_node)
-                for j in range(len(list_nodes) - 1):
-                    first_node = list_nodes[j]
-                    second_node = list_nodes[j + 1]
-                    length = float(graph.adj[first_node][second_node][0]["length"])
-                    maxspeed = None
-                    if (type(graph.adj[first_node][second_node][0]["maxspeed"] == list)):
-                        maxspeed = float(graph.adj[first_node][second_node][0]["maxspeed"][0])
-                    else:
-                        maxspeed = float(graph.adj[first_node][second_node][0]["maxspeed"]
-                    graph.adj[first_node][second_node][0]["itime"] = itime(length, highways_congestions.get(key)[2], maxspeed)
+                start_node = osmnx.nearest_nodes(graph, start_coord[0], start_coord[1])
+                finish_node = osmnx.nearest_nodes(graph, finish_coord[0], finish_coord[1])
+                try:
+                    list_nodes = networkx.shortest_path(graph, start_node, finish_node)
+                    for j in range(len(list_nodes) - 1):
+                        first_node = list_nodes[j]
+                        second_node = list_nodes[j + 1]
+                        length = float(graph.adj[first_node][second_node][0]["length"])
+                        maxspeed = None
+                        if (type(graph.adj[first_node][second_node][0]["maxspeed"] == list)):
+                            maxspeed = float(graph.adj[first_node][second_node][0]["maxspeed"][0])
+                        else:
+                            maxspeed = float(graph.adj[first_node][second_node][0]["maxspeed"])
+                            graph.adj[first_node][second_node][0]["itime"] = itime(length, highways_congestions.get(key)[2], maxspeed)
+                except:
+                    pass
+
     return graph
 
 def main():
@@ -105,13 +110,24 @@ def main():
         graph = download_graph(PLACE)
         save_graph (graph, GRAPH_FILENAME)
 
-    #osmnx.plot_graph(graph)
 
+    #print(graph.nodes[2108122003]['y'], graph.nodes[2108122003]['x'])
+    #
+    #print(graph.nodes[2108122003]['y'], graph.nodes[308672459]['x'])
+    #print(graph.nodes[2108122003])
+    #print(networkx.shortest_path(graph, 390227138, 687897113))
+    #print(osmnx.nearest_edges(graph,41.3806406,2.1186115))
+    #print(osmnx.nearest_nodes(graph, 2.101502862881051,41.3816307921222))
+    #for edge in graph.adj[1425252270].items():
+    #    print(edge)
+    #print(graph.nodes[3509102852]['y'], graph.nodes[3509102852]['x'])
     highways_and_congestions = download_highways_congestions(HIGHWAYS_URL, CONGESTIONS_URL)
     plot_highways(highways_and_congestions, 'highways.png', SIZE)
     plot_congestions(highways_and_congestions, 'congestions.png', SIZE)
 
-    build_igraph(graph, highways_and_congestions)
+    igraph = build_igraph(graph, highways_and_congestions)
+    #for node, info in graph.nodes.items():
+     #   print(node, info)
 
 
 main()
