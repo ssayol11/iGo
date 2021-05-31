@@ -16,12 +16,12 @@ It's necessary to install the following libraries (also mentioned in the 'requir
 'csv', 'pickle', 'random' and 'urllib' libraries are standard, no installation required to use them.
 
 The libraries 'networkx', 'staticmap', 'python-telegram-bot' and 'haversine' can be installed using: 
-1. $ sudo pip3 install 'library name'
+- $ sudo pip3 install 'library name'
 
 To install the 'osmnx' library:
   - Ubuntu:
-    1. $ sudo apt install libspatialindex-dev 
-    2. $ sudo pip3 install osmnx 
+    - $ sudo apt install libspatialindex-dev 
+    - $ sudo pip3 install osmnx 
    
   - Mac: 
     1. $ brew install spatialindex gdal 
