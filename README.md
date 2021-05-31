@@ -16,7 +16,7 @@ It's necessary to install the following libraries (also mentioned in the 'requir
 'csv', 'pickle', 'random' and 'urllib' libraries are standard, no installation required to use them.
 
 The libraries 'networkx', 'staticmap', 'python-telegram-bot' and 'haversine' can be installed using: 
-  $ sudo pip3 install 'library name'
+$ sudo pip3 install 'library name'
 
 To install the 'osmnx' library:
   - Ubuntu:
