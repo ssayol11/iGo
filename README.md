@@ -24,7 +24,7 @@ To install the 'osmnx' library:
    
    - Mac: 
     $brew install spatialindex gdal 
-    $pip3 install --upgrade pip setuptools wheel 
+    $pip3 install --upgrade pip setuptools wheel  
     $pip3 install --upgrade osmnx 
     $pip3 install --upgrade staticmap 
     $sudo pip3 install osmx
