@@ -18,9 +18,9 @@ It's necessary to install the following libraries (also mentioned in the 'requir
 The libraries 'networkx', 'staticmpa', 'python-telegram-bot' and 'haversine' can be installed using:       $ sudo pip3 install 'library name'
 
 To install the 'osmnx' library: 
-  - Ubuntu:
-    $sudo apt install libspatialindex-dev
-    $sudo pip3 install osmnx
+  - Ubuntu: 
+    $sudo apt install libspatialindex-dev 
+    $sudo pip3 install osmnx 
    
    - Mac: 
     $brew install spatialindex gdal 
