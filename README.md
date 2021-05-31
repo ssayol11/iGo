@@ -35,6 +35,6 @@ To install the 'osmnx' library:
 ## Support
 
 For any queries regarding the project you can contact us at: 
-  -Santi Sayol Pruna: santi.sayol@estudiantat.upc.edu
-  -Roger Bel Clapés: roger.bel@estudiantat.upc.edu
+  - Santi Sayol Pruna: santi.sayol@estudiantat.upc.edu
+  - Roger Bel Clapés: roger.bel@estudiantat.upc.edu
   
