@@ -12,3 +12,15 @@ It's necessary to install the following libraries (also mentioned in the 'requir
 - 'haversine' to compute distances in the globe
 - 'csv' to read files in CSV format
 - 'random', 'datetime', 'telegram.ext' to the correct operation of the bot
+
+'csv', 'pickle', 'random' and 'urllib' libraries are standard, no installation required to use them.
+
+The libraries 'networkx', 'staticmpa', 'python-telegram-bot' and 'haversine' can be installed using: $ sudo pip3 install 'library name'
+
+To install the 'osmnx' library:
+  -Ubuntu:
+    $sudo apt install libspatialindex-dev
+    $sudo pip3 install osmnx
+   
+   -Mac:
+    
