@@ -32,9 +32,9 @@ To install the 'osmnx' library:
 The usage is so simple and easy to undestand: 
 1. Firstly, you can check if the bot is operative with the command /start (it's not always ready because creating the igraph takes some time).
 2. At this moment, you can check your location using the command /where (you must have shared you location previously). You can also falsify your location entering some coordinates (latitude, longitude) after the command /pos. This last command is occult, it's just for testing. 
-1. Eg: /pos 41.388980 2.114056
+. Eg: /pos 41.388980 2.114056
 4. The command /go is followed by the name of the location you want to arrive. A path is plotted in a map. 
-1. Eg: /go Campus Nord
+. Eg: /go Campus Nord
 ## Support
 For any queries regarding the project you can contact us at: 
   - Santi Sayol Pruna: santi.sayol@estudiantat.upc.edu
