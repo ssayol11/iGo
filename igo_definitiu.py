@@ -152,11 +152,8 @@ def get_shortest_path_with_ispeeds(igraph, origin, destination):
 #Represents the path "ipath" on the map of barcelona in purple and saves a ".png" file with the name "file".
 def plot_path(igraph, ipath, SIZE, file):
     bcn_map = StaticMap(SIZE, SIZE)
-    coords = []
     for i in range(len(ipath) - 1):
-        coord = (igraph.nodes[ipath[i]]['x'], igraph.nodes[ipath[i]]['y'])
-        coords.append(coord)
-    line = Line(coords, 'rgb(153,51,255)', 2)
-    bcn_map.add_line(line)
+        line = Line([(igraph.nodes[ipath[i]]['x'], igraph.nodes[ipath[i]]['y']), (igraph.nodes[ipath[i + 1]]['x'], igraph.nodes[ipath[i + 1]]['y'])], 'rgb(153,51,255)', 2)
+        bcn_map.add_line(line)
     image = bcn_map.render()
     image.save(file)
