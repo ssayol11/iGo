@@ -1,0 +1,5 @@
+osmnx==1.1.0
+networkx==2.5.1
+haversine==2.3.0
+staticmap==0.5.5
+python-telegram-bot==13.5
