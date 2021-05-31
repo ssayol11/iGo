@@ -20,15 +20,15 @@ $ sudo pip3 install 'library name'
 
 To install the 'osmnx' library:
   - Ubuntu:
-    $sudo apt install libspatialindex-dev 
-    $sudo pip3 install osmnx 
+    1. $sudo apt install libspatialindex-dev 
+    2. $sudo pip3 install osmnx 
    
   - Mac: 
-    $brew install spatialindex gdal 
-    $pip3 install --upgrade pip setuptools wheel  
-    $pip3 install --upgrade osmnx 
-    $pip3 install --upgrade staticmap 
-    $sudo pip3 install osmx
+    1. $brew install spatialindex gdal 
+    2. $pip3 install --upgrade pip setuptools wheel  
+    3. $pip3 install --upgrade osmnx 
+    4. $pip3 install --upgrade staticmap 
+    5. $sudo pip3 install osmx
     
 ## Usage
 
